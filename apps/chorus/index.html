@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-base="neutral" data-accent="blue">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/chorus.svg" />
+    <title>Chorus</title>
+    <script>
+    (function() {
+      var root = document.documentElement;
+      var bases = ["neutral", "stone", "zinc", "mauve", "olive", "mist", "taupe"];
+      var accents = [
+        "amber",
+        "blue",
+        "cyan",
+        "emerald",
+        "fuchsia",
+        "green",
+        "indigo",
+        "lime",
+        "orange",
+        "pink",
+        "purple",
+        "red",
+        "rose",
+        "sky",
+        "teal",
+        "violet",
+        "yellow",
+      ];
+      var modes = ["light", "dark", "system"];
+      function stored(key, allowed, fallback) {
+        try {
+          var value = window.localStorage.getItem(key);
+          return allowed.indexOf(value) === -1 ? fallback : value;
+        } catch (error) {
+          return fallback;
+        }
+      }
+      var base = stored("chorus.theme-base", bases, "neutral");
+      var accent = stored("chorus.theme-accent", accents, "blue");
+      var mode = stored("chorus.theme-mode", modes, "system");
+      var dark = mode === "dark"
+        || (mode === "system"
+          && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      root.dataset.base = base;
+      root.dataset.accent = accent;
+      root.dataset.mode = mode;
+      root.dataset.theme = dark ? "dark" : "light";
+      root.classList.toggle("dark", dark);
+      root.style.colorScheme = dark ? "dark" : "light";
+    })();
+    </script>
+    <style>
+    html {
+      background-color: oklch(1 0 0);
+    }
+    html.dark {
+      background-color: oklch(0.145 0 0);
+    }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+# Browser home branding: top-left Chorus lockup, solid base background, centered watermark
+appId: com.soumitrasaha.chorus
+name: browser-home-brand
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 30000
+- assertVisible: "Chorus"
+- assertVisible: "Open YouTube"
+- assertVisible: "Open YouTube Music"
+- assertVisible: "Open Spotify"
+- assertVisible: "Add shortcut"

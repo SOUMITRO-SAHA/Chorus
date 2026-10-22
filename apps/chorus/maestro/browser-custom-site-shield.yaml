@@ -1,0 +1,25 @@
+appId: com.soumitrasaha.chorus
+name: browser-custom-site-shield
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: false
+- tapOn:
+    id: "browser-url-input"
+- inputText: "http://127.0.0.1:8765/custom-site-shield.html"
+- tapOn:
+    id: "browser-url-submit"
+- extendedWaitUntil:
+    visible: "Custom-site shield check"
+    timeout: 15000
+- assertVisible: "Blocker script installed"
+- extendedWaitUntil:
+    visible: "Ad request blocked (204)"
+    timeout: 15000
+- assertVisible: "Same-site request passes (200)"
+- tapOn:
+    id: ".*chorus-nav-home"
+- extendedWaitUntil:
+    visible:
+      id: "browser-url-input"
+    timeout: 15000

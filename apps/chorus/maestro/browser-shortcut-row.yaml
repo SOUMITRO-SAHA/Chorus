@@ -1,0 +1,14 @@
+# Browser home shortcuts: four tiles in one row, official full-colour service marks
+appId: com.soumitrasaha.chorus
+name: browser-shortcut-row
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- assertVisible:
+    id: ".*browser-url-input"
+- assertVisible: "Open YouTube"
+- assertVisible: "Open YouTube Music"
+- assertVisible: "Open Spotify"
+- assertVisible: "Add shortcut"
+- assertVisible: "Chorus"
+- takeScreenshot: browser-shortcut-row

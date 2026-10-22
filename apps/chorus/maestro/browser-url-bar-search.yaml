@@ -1,0 +1,18 @@
+# YouTube search inside Chorus Browser via the home URL bar (NCS)
+appId: com.soumitrasaha.chorus
+name: browser-url-bar-search
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn:
+    id: ".*browser-url-input"
+- inputText: "ncs"
+- tapOn:
+    id: ".*browser-url-submit"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 60000
+- waitForAnimationToEnd:
+    timeout: 20000
+- takeScreenshot: browser-url-search

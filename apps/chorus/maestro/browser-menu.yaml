@@ -1,0 +1,20 @@
+# Browser menu (⋮): kebab menu, history panel, clear history
+appId: com.soumitrasaha.chorus
+name: browser-menu
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- assertVisible:
+    id: ".*browser-menu"
+- tapOn:
+    id: ".*browser-menu"
+- assertVisible: "History"
+- assertVisible: "Clear history"
+- takeScreenshot: browser-menu
+- tapOn: "History"
+- assertVisible: "Clear history"
+- takeScreenshot: browser-history-panel
+- tapOn:
+    id: ".*close-history"
+- assertVisible:
+    id: ".*browser-url-input"

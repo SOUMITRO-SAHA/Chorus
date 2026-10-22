@@ -13,7 +13,7 @@ endpoints. Chorus hosts nothing and redistributes nothing: every stream flows
 from the origin service to you. All that changes is what gets filtered before it
 reaches your screen.
 
-![Chorus](app/public/chorus.svg)
+![Chorus](apps/chorus/public/chorus.svg)
 
 > **Status:** active development. **Android is the primary target**; macOS is
 > secondary. Windows and Linux builds are not validated. This repository is the
@@ -57,8 +57,8 @@ Android currently relies on the injected page filter. **Network-level filtering
 on Android is the top shield roadmap item** and the step that brings the primary
 platform to parity with macOS.
 
-Rules live in `app/src-tauri/src/modules/blocker/` and the reusable filter
-engine in `app/src-tauri/crates/blocker/`. Filter lists are living data: when a
+Rules live in `apps/chorus/src-tauri/src/modules/blocker/` and the reusable filter
+engine in `apps/chorus/src-tauri/crates/blocker/`. Filter lists are living data: when a
 service changes its ad endpoints, update the rules there.
 
 ## What is in the app
@@ -109,20 +109,20 @@ switching services tears the previous one down.
 
 ### Code map
 
-| Path                                   | What it is                                                        |
-| -------------------------------------- | ----------------------------------------------------------------- |
-| `app/src/`                             | React 19 + TypeScript UI; feature folders under `features/`       |
-| `app/src/lib/api.ts`                   | The only place that calls Tauri `invoke()`                        |
-| `app/src-tauri/src/lib.rs`             | Composition root: plugins, main window, command registration      |
-| `app/src-tauri/src/modules/browser/`   | Chorus Browser commands, chrome injection, favicon discovery      |
-| `app/src-tauri/src/modules/providers/` | One Rust module per service plus the InnerTube client             |
-| `app/src-tauri/src/modules/blocker/`   | Shield adapter and macOS `WKContentRuleList` installer            |
-| `app/src-tauri/src/modules/services/`  | Service registry and desktop user agent                           |
-| `app/src-tauri/crates/browser-store/`  | SQLite persistence for shortcuts and history                      |
-| `app/src-tauri/crates/blocker/`        | Filter rules, injected scripts, and the reusable blocking engine  |
-| `app/maestro/`                         | Declarative Android E2E flows, one per feature                    |
-| `docs/prd.md`                          | Product requirements: vision, pillars, legal positioning, roadmap |
-| `docs/android-shell.md`                | Android window-inset and layout authority                         |
+| Path                                           | What it is                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `apps/chorus/src/`                             | React 19 + TypeScript UI; feature folders under `features/`       |
+| `apps/chorus/src/lib/api.ts`                   | The only place that calls Tauri `invoke()`                        |
+| `apps/chorus/src-tauri/src/lib.rs`             | Composition root: plugins, main window, command registration      |
+| `apps/chorus/src-tauri/src/modules/browser/`   | Chorus Browser commands, chrome injection, favicon discovery      |
+| `apps/chorus/src-tauri/src/modules/providers/` | One Rust module per service plus the InnerTube client             |
+| `apps/chorus/src-tauri/src/modules/blocker/`   | Shield adapter and macOS `WKContentRuleList` installer            |
+| `apps/chorus/src-tauri/src/modules/services/`  | Service registry and desktop user agent                           |
+| `apps/chorus/src-tauri/crates/browser-store/`  | SQLite persistence for shortcuts and history                      |
+| `apps/chorus/src-tauri/crates/blocker/`        | Filter rules, injected scripts, and the reusable blocking engine  |
+| `apps/chorus/maestro/`                         | Declarative Android E2E flows, one per feature                    |
+| `docs/prd.md`                                  | Product requirements: vision, pillars, legal positioning, roadmap |
+| `docs/android-shell.md`                        | Android window-inset and layout authority                         |
 
 ## Quick start
 
@@ -131,7 +131,7 @@ Prerequisites: [Bun](https://bun.sh) 1.4.3, a stable Rust toolchain, and the
 platform. Android also needs the Android SDK, NDK, and JDK 17.
 
 ```bash
-cd app
+cd apps/chorus
 bun install
 bun android         # Android dev — the primary target
 bun run tauri dev   # desktop (macOS)
@@ -144,7 +144,7 @@ server blocks `bun android`; stop it with `lsof -ti:1420 | xargs kill`.
 ## Android
 
 ```bash
-cd app
+cd apps/chorus
 rustup target add aarch64-linux-android
 cargo install cargo-ndk
 export JAVA_HOME=/path/to/jdk-17
@@ -162,7 +162,7 @@ browser navigate it in place, with injected chrome to come back home.
 
 ## Tests
 
-Rust (from `app/src-tauri/`):
+Rust (from `apps/chorus/src-tauri/`):
 
 ```bash
 cargo test                 # unit tests (offline)
@@ -172,23 +172,23 @@ cargo test --test live_api # live protocol validation against real service endpo
 E2E with Maestro (Android device/emulator, with `bun android` running):
 
 ```bash
-cd app
+cd apps/chorus
 maestro test maestro/browser-home.yaml             # browser home renders
 maestro test maestro/browser-youtube-ncs.yaml      # YouTube opens in-browser, ad-free
 maestro test maestro/browser-spotify-no-login.yaml # Spotify opens in-browser
 ```
 
-One declarative Maestro flow per feature lives in `app/maestro/`. Screenshots
+One declarative Maestro flow per feature lives in `apps/chorus/maestro/`. Screenshots
 from local runs belong in `.temp/screenshorts/` and are never committed.
 
 ## Quality gates
 
 ```bash
-cd app
+cd apps/chorus
 bun run build
 bun run format:check
 
-cd app/src-tauri
+cd apps/chorus/src-tauri
 cargo clippy --all-targets -- -D warnings
 cargo test
 ```
@@ -265,7 +265,7 @@ This repository is the home of Chorus development.
   optimization requests are welcome — they drive the roadmap.
 - Keep pull requests focused, include the tests you ran, and never commit
   secrets, credentials, `.env` files, or signing material.
-- UI changes need a targeted Maestro flow in `app/maestro/` and a real Android
+- UI changes need a targeted Maestro flow in `apps/chorus/maestro/` and a real Android
   run.
 - Commit messages follow `type(scope): subject` and contain no third-party brand
   names; the services Chorus supports are the exception.

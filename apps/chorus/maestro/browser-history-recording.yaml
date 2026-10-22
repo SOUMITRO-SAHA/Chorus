@@ -1,0 +1,32 @@
+# Browser history recording: an address-bar navigation must land in history,
+# and Chorus's own origin must not (audit #1/#3 regression flow).
+appId: com.soumitrasaha.chorus
+name: browser-history-recording
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: true
+- assertVisible:
+    id: ".*browser-url-input"
+- tapOn:
+    id: ".*browser-url-input"
+- inputText: "ncs"
+- tapOn:
+    id: ".*browser-url-submit"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 60000
+- waitForAnimationToEnd:
+    timeout: 20000
+- tapOn:
+    id: ".*chorus-nav-home"
+- assertVisible:
+    id: ".*browser-menu"
+- tapOn:
+    id: ".*browser-menu"
+- tapOn: "History"
+- assertVisible:
+    id: ".*history-.*"
+- assertNotVisible: "tauri.localhost"
+- takeScreenshot: browser-history-recording

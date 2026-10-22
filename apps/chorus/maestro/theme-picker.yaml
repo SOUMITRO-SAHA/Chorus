@@ -1,0 +1,67 @@
+# Theme settings: Settings -> Themes, Blue default, selection persists across relaunch.
+# The selected swatch exposes its check mark in the accessibility label ("Purple ✓").
+appId: com.soumitrasaha.chorus
+name: theme-picker
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 30000
+- tapOn:
+    id: "browser-menu"
+- assertVisible: "Settings"
+- tapOn:
+    id: "browser-menu-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-themes-link"
+    timeout: 10000
+- tapOn:
+    id: "settings-themes-link"
+- extendedWaitUntil:
+    visible: "Base color"
+    timeout: 10000
+- assertVisible: "Blue.*✓"
+- tapOn:
+    id: "theme-option-purple"
+- assertVisible: "Purple.*✓"
+- tapOn:
+    id: "theme-option-zinc"
+- assertVisible: "Zinc.*✓"
+- tapOn:
+    id: "app-header-back"
+- extendedWaitUntil:
+    visible:
+      id: "settings-themes-link"
+    timeout: 10000
+- assertVisible: ".*Zinc base"
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 30000
+- tapOn:
+    id: "browser-menu"
+- tapOn:
+    id: "browser-menu-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-themes-link"
+    timeout: 10000
+- tapOn:
+    id: "settings-themes-link"
+- extendedWaitUntil:
+    visible: "Base color"
+    timeout: 10000
+- assertVisible: "Purple.*✓"
+- assertVisible: "Zinc.*✓"
+- tapOn:
+    id: "theme-option-blue"
+- assertVisible: "Blue.*✓"
+- tapOn:
+    id: "theme-option-neutral"
+- assertVisible: "Neutral.*✓"

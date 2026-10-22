@@ -1,0 +1,89 @@
+# Floating browser nav: Home / Reload / Back / Forward over a loaded page.
+# IANA's example-domains pages are stable, same-site pages: load page A,
+# reload it, follow a link to page B, then walk the page history.
+appId: com.soumitrasaha.chorus
+name: browser-floating-nav
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn:
+    id: ".*browser-url-input"
+- inputText: "https://www.iana.org/domains/example"
+- pressKey: enter
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-float-nav"
+    timeout: 60000
+- assertNotVisible:
+    id: ".*chorus-float-nav"
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-reload"
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-back"
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-forward"
+    timeout: 20000
+- assertNotVisible:
+    id: ".*chorus-nav-search"
+- assertNotVisible:
+    id: ".*chorus-nav-history"
+- assertNotVisible:
+    id: ".*chorus-nav-profile"
+- extendedWaitUntil:
+    visible: "Example Domains"
+    timeout: 60000
+- takeScreenshot: browser-floating-nav
+# Reload keeps the current page and the injected chrome alive.
+- tapOn:
+    id: ".*chorus-nav-reload"
+- extendedWaitUntil:
+    visible: "Example Domains"
+    timeout: 60000
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-reload"
+    timeout: 20000
+- takeScreenshot: browser-floating-nav-reload
+# Follow a same-site link to create a second page-history entry.
+- scrollUntilVisible:
+    element:
+      text: "IANA-managed Reserved Domains"
+    direction: DOWN
+    timeout: 20000
+    centerElement: true
+- tapOn: "IANA-managed Reserved Domains"
+- extendedWaitUntil:
+    notVisible: "Further Reading"
+    timeout: 60000
+- assertVisible: "IANA-managed Reserved Domains"
+- takeScreenshot: browser-floating-nav-second-page
+# Back returns to the example-domains page.
+- tapOn:
+    id: ".*chorus-nav-back"
+- scrollUntilVisible:
+    element:
+      text: "Example Domains"
+    direction: UP
+    timeout: 20000
+- assertVisible: "Example Domains"
+- takeScreenshot: browser-floating-nav-back
+# Forward returns to the reserved-domains page.
+- tapOn:
+    id: ".*chorus-nav-forward"
+- scrollUntilVisible:
+    element:
+      text: "Test IDN top-level domains"
+    direction: DOWN
+    timeout: 20000
+- assertVisible: "Test IDN top-level domains"
+- takeScreenshot: browser-floating-nav-forward
