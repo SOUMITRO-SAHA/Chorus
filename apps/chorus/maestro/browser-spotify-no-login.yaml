@@ -1,0 +1,16 @@
+# Spotify inside Chorus Browser — attempted playback without login.
+# Expected honest outcome: the web player requires an account; the browser
+# must still render the site with our chrome and never fake playback.
+appId: com.soumitrasaha.chorus
+name: browser-spotify-no-login
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn: "Open Spotify"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 60000
+- waitForAnimationToEnd:
+    timeout: 20000
+- takeScreenshot: browser-spotify

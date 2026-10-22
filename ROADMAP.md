@@ -84,12 +84,12 @@ Site optimization requests are the unit of product planning
 Open an issue with the host URL, what breaks, your device, and screenshots.
 Issues are triaged into labeled queues:
 
-| Label          | Queue                              | Priority     |
-| -------------- | ---------------------------------- | ------------ |
-| `shield`       | ads leaking — filter-rule fix      | highest      |
-| `site-profile` | rendering/responsive break on a host | high       |
-| `perf`         | slow start, janky player           | high         |
-| `safety`       | scammy host — isolate or warn      | as raised    |
+| Label          | Queue                                | Priority  |
+| -------------- | ------------------------------------ | --------- |
+| `shield`       | ads leaking — filter-rule fix        | highest   |
+| `site-profile` | rendering/responsive break on a host | high      |
+| `perf`         | slow start, janky player             | high      |
+| `safety`       | scammy host — isolate or warn        | as raised |
 
 ## Ground rules for everything above
 

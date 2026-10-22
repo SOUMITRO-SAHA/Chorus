@@ -1,0 +1,23 @@
+# YouTube inside Chorus Browser: open via tile and assert the persistent
+# browser chrome (Home / Reload / Back / Forward) on the service page.
+appId: com.soumitrasaha.chorus
+name: browser-youtube-ncs
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn: "Open YouTube"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 60000
+- assertVisible:
+    id: ".*chorus-nav-reload"
+- assertVisible:
+    id: ".*chorus-nav-back"
+- assertVisible:
+    id: ".*chorus-nav-forward"
+- takeScreenshot: browser-youtube
+# The site remains interactive beneath our injected chrome.
+- tapOn:
+    point: "50%, 47%"
+- takeScreenshot: browser-youtube-after-tap

@@ -1,0 +1,17 @@
+# Layout & insets: status bar / gesture bar spacing on browser + browser-youtube
+appId: com.soumitrasaha.chorus
+name: layout-insets
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- assertVisible:
+    id: ".*browser-url-input"
+- assertVisible: "Chorus"
+- takeScreenshot: ../../.temp/screenshorts/layout-home
+- tapOn: "Open YouTube"
+- extendedWaitUntil:
+    visible: "www.youtube.com"
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: ../../.temp/screenshorts/layout-browser-youtube

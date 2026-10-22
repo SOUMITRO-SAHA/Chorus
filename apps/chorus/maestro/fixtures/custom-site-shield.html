@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Custom-site shield check</title>
+  </head>
+  <body>
+    <h1>Custom-site shield check</h1>
+    <p id="script-state">Blocker script missing</p>
+    <p id="ad-request">Checking ad request</p>
+    <p id="site-request">Checking same-site request</p>
+    <script>
+    document.querySelector("#script-state").textContent =
+      window.__CHORUS__ && window.fetch.toString().includes("blocked")
+        ? "Blocker script installed"
+        : "Blocker script missing";
+    fetch("https://ib.adnxs.com/chorus-blocker-probe")
+      .then((response) => {
+        document.querySelector("#ad-request").textContent = `Ad request blocked (${response.status})`;
+      })
+      .catch(() => {
+        document.querySelector("#ad-request").textContent = "Ad request was not filtered";
+      });
+    fetch("./ok.txt")
+      .then((response) => {
+        document.querySelector("#site-request").textContent = `Same-site request passes (${response.status})`;
+      })
+      .catch(() => {
+        document.querySelector("#site-request").textContent = "Same-site request failed";
+      });
+    </script>
+  </body>
+</html>

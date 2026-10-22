@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+target
+gen
+
+# Logs
+logs
+*.log
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Tooling state
+.last-wireless-device
+
+# Scratch and screenshots
+.temp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

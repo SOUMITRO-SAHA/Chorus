@@ -1,0 +1,27 @@
+appId: com.soumitrasaha.chorus
+name: browser-custom-shortcut-frame
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- assertVisible:
+    id: ".*shortcut-.*"
+    index: 3
+- tapOn:
+    id: ".*shortcut-.*"
+    index: 3
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-float-nav"
+    timeout: 60000
+- assertNotVisible:
+    id: ".*chorus-float-nav"
+    index: 1
+- tapOn: "Watch Now"
+- extendedWaitUntil:
+    visible: "You are watching"
+    timeout: 60000
+- assertVisible:
+    id: ".*chorus-float-nav"
+- assertNotVisible:
+    id: ".*chorus-float-nav"
+    index: 1

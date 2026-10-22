@@ -1,0 +1,14 @@
+# Browser home: URL bar, official-logo shortcut tiles, "+" tile, wordmark
+appId: com.soumitrasaha.chorus
+name: browser-home
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- assertVisible:
+    id: ".*browser-url-input"
+- assertVisible: "Open YouTube"
+- assertVisible: "Open YouTube Music"
+- assertVisible: "Open Spotify"
+- assertVisible: "Add shortcut"
+- assertVisible: "Chorus"
+- takeScreenshot: browser-home

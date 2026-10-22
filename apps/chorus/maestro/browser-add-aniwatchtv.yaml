@@ -1,0 +1,51 @@
+appId: com.soumitrasaha.chorus
+name: browser-add-aniwatchtv
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: false
+- assertVisible:
+    id: ".*browser-url-input"
+- extendedWaitUntil:
+    visible: "Open Spotify"
+    timeout: 20000
+- runFlow:
+    when:
+      notVisible: "Open aniwatchtv.ro"
+    commands:
+      - tapOn:
+          id: "browser-add-shortcut"
+      - assertVisible: "Website link"
+      - inputText: "https://aniwatchtv.ro/"
+      - assertVisible: "https://aniwatchtv.ro/"
+      - takeScreenshot: aniwatch-shortcut-dialog
+      - tapOn:
+          id: "shortcut-add-submit"
+      - extendedWaitUntil:
+          visible: "Open aniwatchtv.ro"
+          timeout: 30000
+- assertVisible: "Open aniwatchtv.ro"
+- assertNotVisible:
+    text: "Open aniwatchtv.ro"
+    index: 1
+- takeScreenshot: aniwatch-shortcut-added
+- tapOn: "Open aniwatchtv.ro"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-float-nav"
+    timeout: 60000
+- assertNotVisible:
+    id: ".*chorus-float-nav"
+    index: 1
+- takeScreenshot: aniwatch-shortcut-open
+- tapOn:
+    id: ".*chorus-nav-home"
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 20000
+- assertVisible: "Open aniwatchtv.ro"
+- assertNotVisible:
+    text: "Open aniwatchtv.ro"
+    index: 1
+- takeScreenshot: aniwatch-shortcut-home

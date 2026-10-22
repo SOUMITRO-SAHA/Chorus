@@ -1,0 +1,30 @@
+# Native YT Music: NCS playback (merged video results are the playable path;
+# gated catalog songs surface the honest error banner)
+appId: com.soumitrasaha.chorus
+name: music-native-ncs
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn: "Open YouTube Music"
+- extendedWaitUntil:
+    visible:
+      text: "Play .*"
+    timeout: 60000
+- tapOn:
+    id: ".*search-input"
+- inputText: "ncs"
+- tapOn:
+    id: ".*search-submit"
+- extendedWaitUntil:
+    visible:
+      text: "Play .*"
+    timeout: 45000
+- takeScreenshot: ../../.temp/screenshorts/music-native-ncs-results
+- tapOn:
+    text: "Play .*"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      text: "Now playing|Try another song"
+    timeout: 30000
+- takeScreenshot: ../../.temp/screenshorts/music-native-ncs-playing

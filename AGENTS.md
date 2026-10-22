@@ -74,7 +74,7 @@ compiled.
 ## Repository layout
 
 ```text
-app/                         Tauri application
+apps/chorus/                 Tauri application
   src/                       React 19 + TypeScript client
     components/ui/           vendored shadcn/ui primitives
     features/                browser-home, youtube, music, spotify, settings
@@ -89,6 +89,8 @@ app/                         Tauri application
     src/shared/              primitives shared by 2+ modules
     crates/                  standalone library crates (browser-store, blocker)
   maestro/                   declarative Android E2E flows
+apps/                        workspace for future applications (server, marketing)
+packages/                    shared packages (reserved)
 docs/                        product and protocol documentation
 ```
 
@@ -104,9 +106,9 @@ tier only when the trigger fires, in the same change. Name modules for the
 capability — never create `utils.rs`, `helpers.rs`, or `common.rs` dumping
 grounds.
 
-The app lives in **`app/`**. Run every app command from that directory.
+The app lives in **`apps/chorus/`**. Run every app command from that directory.
 
-## Commands (run from `app/`)
+## Commands (run from `apps/chorus/`)
 
 | Task                           | Command                                                       |
 | ------------------------------ | ------------------------------------------------------------- |
@@ -122,9 +124,9 @@ The app lives in **`app/`**. Run every app command from that directory.
 | Desktop dev                    | `bun run tauri dev`                                           |
 | Android debug APK              | `bun run tauri android build --target aarch64 --debug --apk`  |
 
-Package manager is **Bun** (`app/bun.lock`). Never introduce
-`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`. The Vite dev server is
-pinned to port 1420 with `strictPort: true`; a stale server blocks
+Package manager is **Bun** (one root `bun.lock` for the whole workspace).
+Never introduce `package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`. The Vite
+dev server is pinned to port 1420 with `strictPort: true`; a stale server blocks
 `bun android`.
 
 ## Testing
@@ -139,14 +141,14 @@ Two rules are binding on every change:
   targeted Maestro flow that asserts the rendered result. Run the flow; do not
   describe a run you did not execute.
 
-Every flow lives in `app/maestro/`, one feature per file. Run the flows tied to
+Every flow lives in `apps/chorus/maestro/`, one feature per file. Run the flows tied to
 the change; a full run is for cross-cutting changes. All screenshots from local
 runs go in `.temp/screenshorts/` and are never committed.
 
 Before a PR, run:
 
 ```bash
-cd app
+cd apps/chorus
 bun run build
 bun run format:check
 
@@ -196,18 +198,18 @@ both Rust and TypeScript.
 
 **Files are kebab-case, with a role suffix carrying one role per file.**
 
-| Kind                       | File name             | Example                                       |
-| -------------------------- | --------------------- | --------------------------------------------- |
-| React component            | `<name>.tsx`          | `MediaCard` in `components/media-card.tsx`    |
-| React hook                 | `useHookName.ts`      | `useAudioPlayer` in `hooks/useAudioPlayer.ts` |
-| shadcn / Radix primitive   | `<name>.tsx`          | `components/ui/button.tsx`                    |
-| Typed IPC wrapper / module | `<name>.ts`           | `lib/api.ts`                                  |
-| Shared types               | `<domain>.types.ts`   | `MediaItem` in `lib/media.types.ts`           |
-| Pure helpers               | `<name>.utils.ts`     | `formatDuration.utils.ts`                     |
-| Constants / query keys     | `<name>.constants.ts` | `query-keys.constants.ts`                     |
-| Feature page / component   | `<name>.tsx` or `<name>-page.tsx` | `launcher.tsx`, `music-page.tsx`  |
-| Maestro flow               | `<feature>.yaml`      | `maestro/youtube-search.yaml`                 |
-| Vite / toolchain config    | framework name        | `vite.config.ts`                              |
+| Kind                       | File name                         | Example                                       |
+| -------------------------- | --------------------------------- | --------------------------------------------- |
+| React component            | `<name>.tsx`                      | `MediaCard` in `components/media-card.tsx`    |
+| React hook                 | `useHookName.ts`                  | `useAudioPlayer` in `hooks/useAudioPlayer.ts` |
+| shadcn / Radix primitive   | `<name>.tsx`                      | `components/ui/button.tsx`                    |
+| Typed IPC wrapper / module | `<name>.ts`                       | `lib/api.ts`                                  |
+| Shared types               | `<domain>.types.ts`               | `MediaItem` in `lib/media.types.ts`           |
+| Pure helpers               | `<name>.utils.ts`                 | `formatDuration.utils.ts`                     |
+| Constants / query keys     | `<name>.constants.ts`             | `query-keys.constants.ts`                     |
+| Feature page / component   | `<name>.tsx` or `<name>-page.tsx` | `launcher.tsx`, `music-page.tsx`              |
+| Maestro flow               | `<feature>.yaml`                  | `maestro/youtube-search.yaml`                 |
+| Vite / toolchain config    | framework name                    | `vite.config.ts`                              |
 
 - React components are kebab-case files with a PascalCase symbol matching the
   export — this is what shadcn generates; stay consistent with the CLI.
@@ -261,7 +263,7 @@ change** — a silent mismatch shows up only as `undefined` at runtime.
   understood.
 - Imports flow inward only: `features/components` → `hooks` → `lib`. Never the
   reverse; no feature imports another feature's internals.
-- `app/src/lib/api.ts` is the only place allowed to call `invoke()`. Components
+- `apps/chorus/src/lib/api.ts` is the only place allowed to call `invoke()`. Components
   never call it directly.
 - Treat IPC payloads as untrusted. `api.ts` is the boundary; components consume
   domain types.
@@ -282,13 +284,13 @@ change** — a silent mismatch shows up only as `undefined` at runtime.
 ## UI rules
 
 - **shadcn-first, strictly.** If a component exists in the shadcn registry, use
-  it: install with `bunx shadcn@latest add <name>` from `app/`. Never hand-roll
+  it: install with `bunx shadcn@latest add <name>` from `apps/chorus/`. Never hand-roll
   an equivalent. Custom components are the exception, built on the vendored
   primitives and theme tokens, with the reason stated.
-- Use theme tokens from `app/src/index.css` only. No raw palette colours.
+- Use theme tokens from `apps/chorus/src/index.css` only. No raw palette colours.
 - Use the 4px spacing grid and the `--radius` scale: `rounded-lg` panels,
   `rounded-md` controls, `rounded-xl` floating overlays.
-- `app/src/components/ui/` is generated shadcn code. Do not hand-edit it to work
+- `apps/chorus/src/components/ui/` is generated shadcn code. Do not hand-edit it to work
   around app code.
 - Keep provider-specific behavior in `src/features/<domain>/` and
   `src-tauri/src/modules/providers/`. Generic UI must not branch on provider
@@ -300,7 +302,7 @@ change** — a silent mismatch shows up only as `undefined` at runtime.
 Chorus Browser (modules/browser/ + browser-home)  ── persistent webview ──▶ official sites
       │ always-on Shield (modules/blocker/) on every page
       │
-React (app/src/)  ──invoke()──▶  Rust Tauri commands (app/src-tauri/src/modules/)
+React (apps/chorus/src/)  ──invoke()──▶  Rust Tauri commands (apps/chorus/src-tauri/src/modules/)
      │                            ├─ providers/innertube.rs → InnerTube API
 src/lib/api.ts                    ├─ providers/youtube.rs   → browse/search/watch
 (the ONLY data layer)             ├─ providers/music.rs     → home/search/play
@@ -348,7 +350,7 @@ src/lib/api.ts                    ├─ providers/youtube.rs   → browse/searc
    via React Query.
 4. `bun run build` clean → `bun run format:check` + `cargo clippy
    --all-targets -- -D warnings` clean → verify on Android via `bun android`
-   → add + run a Maestro flow in `app/maestro/`.
+   → add + run a Maestro flow in `apps/chorus/maestro/`.
 
 ## Security and privacy
 
@@ -376,8 +378,8 @@ src/lib/api.ts                    ├─ providers/youtube.rs   → browse/searc
 - Do not force-push `main`, rewrite shared history, or merge without review.
 - Do not commit generated output: `node_modules/`, `target/`, `dist/`, `gen/`,
   `.temp/`, or local secrets.
-- Keep `app/bun.lock` and `app/src-tauri/Cargo.lock` with dependency changes;
-  never hand-edit either.
+- Keep the root `bun.lock` and `apps/chorus/src-tauri/Cargo.lock` with
+  dependency changes; never hand-edit either.
 
 ## Gotchas
 

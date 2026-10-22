@@ -1,0 +1,12 @@
+# YT Music inside Chorus Browser (NCS search via music.youtube.com)
+appId: com.soumitrasaha.chorus
+name: browser-ytmusic-ncs
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn: "Open YouTube Music"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 60000
+- takeScreenshot: browser-ytmusic

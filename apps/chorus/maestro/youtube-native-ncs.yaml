@@ -1,0 +1,30 @@
+# Native YouTube: NCS search + playback (YouTube-side videos play on the
+# anonymous client; transient verification-gates surface the error state)
+appId: com.soumitrasaha.chorus
+name: youtube-native-ncs
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- tapOn: "Open YouTube"
+- extendedWaitUntil:
+    visible:
+      text: "Play .*"
+    timeout: 60000
+- tapOn:
+    id: ".*search-input"
+- inputText: "ncs"
+- tapOn:
+    id: ".*search-submit"
+- extendedWaitUntil:
+    visible:
+      text: "Play .*"
+    timeout: 45000
+- takeScreenshot: ../../.temp/screenshorts/youtube-native-ncs-results
+- tapOn:
+    text: "Play .*"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      text: "Up next|Try again"
+    timeout: 45000
+- takeScreenshot: ../../.temp/screenshorts/youtube-native-ncs-watch

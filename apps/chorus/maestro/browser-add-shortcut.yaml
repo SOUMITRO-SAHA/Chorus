@@ -1,0 +1,36 @@
+# Add-shortcut dialog: centered URL field (autofocused), favicon fetch with default fallback
+appId: com.soumitrasaha.chorus
+name: browser-add-shortcut
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: true
+- tapOn:
+    id: "browser-add-shortcut"
+- assertVisible: "Website link"
+- inputText: "github.com"
+- assertVisible: "github.com"
+- takeScreenshot: browser-add-shortcut-dialog
+- tapOn:
+    id: "shortcut-add-submit"
+- extendedWaitUntil:
+    visible: "Open github.com"
+    timeout: 20000
+- tapOn:
+    id: "browser-add-shortcut"
+- assertVisible: "Website link"
+- tapOn:
+    id: "shortcut-dialog-close"
+- extendedWaitUntil:
+    notVisible: "Website link"
+    timeout: 5000
+- tapOn:
+    id: "browser-add-shortcut"
+- assertVisible: "Website link"
+- inputText: "example.com"
+- tapOn:
+    id: "shortcut-add-submit"
+- extendedWaitUntil:
+    visible: "Open example.com"
+    timeout: 20000
+- takeScreenshot: browser-add-shortcut-tiles

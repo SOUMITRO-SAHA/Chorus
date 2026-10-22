@@ -37,14 +37,14 @@ Chorus began as a "media app": native UIs calling provider APIs directly.
 The native path still exists as an optimization layer (§3.5), but the
 product identity and the legally sound default is the browser path:
 
-|                  | Media-app framing (old)            | Streaming-browser framing (current)    |
-| ---------------- | ---------------------------------- | -------------------------------------- |
-| What we ship     | A media app with providers         | A browser with site profiles           |
-| Content source   | Provider APIs we integrate         | The official websites, rendered as-is  |
-| Who serves content | The app calls provider APIs      | The origin service, to the user        |
-| Legal surface    | We touch internal APIs for content | We render pages the user requests      |
-| Ad removal       | Feature of the app                 | Client-side filtering, a browser capability |
-| Scope            | Hard-coded services                | Any streaming site, optimized on request    |
+|                    | Media-app framing (old)            | Streaming-browser framing (current)         |
+| ------------------ | ---------------------------------- | ------------------------------------------- |
+| What we ship       | A media app with providers         | A browser with site profiles                |
+| Content source     | Provider APIs we integrate         | The official websites, rendered as-is       |
+| Who serves content | The app calls provider APIs        | The origin service, to the user             |
+| Legal surface      | We touch internal APIs for content | We render pages the user requests           |
+| Ad removal         | Feature of the app                 | Client-side filtering, a browser capability |
+| Scope              | Hard-coded services                | Any streaming site, optimized on request    |
 
 A browser is the oldest, most litigated category of client software. Browsers
 fetch and render what the user asks for; the content, its licensing, and its
@@ -267,37 +267,37 @@ Status legend: **Shipped** (in the code today) · **Next** (current focus) ·
 **Planned** (committed roadmap) · **Exploring** (future scope, not
 committed) · **Open** (required, not started).
 
-| Feature                                                           | Status                     | Lives in                       |
-| ----------------------------------------------------------------- | -------------------------- | ------------------------------ |
-| Chorus Browser shell: persistent webview, floating chrome         | Shipped                    | `modules/browser/`             |
-| Mobile in-place navigation with injected **← Chorus** chrome      | Shipped                    | `modules/browser/`             |
-| Desktop service windows (torn down on service switch)             | Shipped (macOS)            | `modules/browser/`             |
-| Desktop UA so official sign-in works in the embedded engine       | Shipped                    | `modules/services/`            |
-| Browser home: shortcuts + service-grouped history (SQLite)        | Shipped                    | `crates/browser-store/`        |
-| Favicon discovery for shortcuts                                   | Shipped                    | `modules/browser/`             |
-| Shield: injected page filter (`fetch`/`XHR` patch + cosmetic CSS) | Shipped (all platforms)    | `crates/blocker/`              |
-| Shield: network-level request filtering                           | Shipped on macOS           | `modules/blocker/`             |
-| SponsorBlock auto-skip with toast (YouTube, YouTube Music)        | Shipped                    | `modules/blocker/`             |
-| Native YouTube browse/search/watch (InnerTube)                    | Shipped (acceleration)     | `modules/providers/`           |
-| Native YouTube Music browse/search/play                           | Shipped (acceleration)     | `modules/providers/`           |
-| Native Spotify browse/search + 30-second previews (Web API, PKCE) | Shipped (acceleration)     | `modules/providers/`           |
-| Themes: light, dark, system across the shadcn/ui palettes         | Shipped                    | `features/settings/`           |
-| Declarative Maestro E2E suite on Android                          | Shipped                    | `maestro/`                     |
-| Android network-level shield (parity with macOS)                  | Next — top priority        | `modules/blocker/`             |
-| Production Content Security Policy                                | Open — release gate        | shell config                   |
-| Store signing and release pipeline                                | Open — release gate        | bundle config                  |
-| Importable filter rule sets (EasyList/EasyPrivacy-style)          | Planned — Phase 1          | `crates/blocker/`              |
-| Per-site shield overrides                                         | Planned — Phase 1          | `crates/blocker/`              |
-| Block counters surfaced in the shield UI                          | Planned — Phase 1          | `modules/browser/`             |
-| Site-profile framework (per-host shield/chrome/responsive tuning) | Planned — Phase 2          | `modules/services/` + profiles |
-| Isolated ephemeral contexts for long-tail sites                   | Planned — Phase 2          | `modules/browser/`             |
-| Safe-browsing warnings; popup/download suppression                | Planned — Phase 2          | `modules/browser/`             |
-| Reading mode (reader extraction, same shield guarantees)          | Planned — Phase 3          | new `modules/reader/`          |
-| AI-native assistance (view-scoped, opt-in, origin-bound)          | Exploring — Phase 4        | —                              |
-| SponsorBlock category toggles in settings                         | Planned — continuous       | `features/settings/`           |
-| Spotify full-track playback via the Web Playback SDK (DRM intact) | Planned — continuous       | `modules/providers/`           |
+| Feature                                                           | Status                     | Lives in                        |
+| ----------------------------------------------------------------- | -------------------------- | ------------------------------- |
+| Chorus Browser shell: persistent webview, floating chrome         | Shipped                    | `modules/browser/`              |
+| Mobile in-place navigation with injected **← Chorus** chrome      | Shipped                    | `modules/browser/`              |
+| Desktop service windows (torn down on service switch)             | Shipped (macOS)            | `modules/browser/`              |
+| Desktop UA so official sign-in works in the embedded engine       | Shipped                    | `modules/services/`             |
+| Browser home: shortcuts + service-grouped history (SQLite)        | Shipped                    | `crates/browser-store/`         |
+| Favicon discovery for shortcuts                                   | Shipped                    | `modules/browser/`              |
+| Shield: injected page filter (`fetch`/`XHR` patch + cosmetic CSS) | Shipped (all platforms)    | `crates/blocker/`               |
+| Shield: network-level request filtering                           | Shipped on macOS           | `modules/blocker/`              |
+| SponsorBlock auto-skip with toast (YouTube, YouTube Music)        | Shipped                    | `modules/blocker/`              |
+| Native YouTube browse/search/watch (InnerTube)                    | Shipped (acceleration)     | `modules/providers/`            |
+| Native YouTube Music browse/search/play                           | Shipped (acceleration)     | `modules/providers/`            |
+| Native Spotify browse/search + 30-second previews (Web API, PKCE) | Shipped (acceleration)     | `modules/providers/`            |
+| Themes: light, dark, system across the shadcn/ui palettes         | Shipped                    | `features/settings/`            |
+| Declarative Maestro E2E suite on Android                          | Shipped                    | `maestro/`                      |
+| Android network-level shield (parity with macOS)                  | Next — top priority        | `modules/blocker/`              |
+| Production Content Security Policy                                | Open — release gate        | shell config                    |
+| Store signing and release pipeline                                | Open — release gate        | bundle config                   |
+| Importable filter rule sets (EasyList/EasyPrivacy-style)          | Planned — Phase 1          | `crates/blocker/`               |
+| Per-site shield overrides                                         | Planned — Phase 1          | `crates/blocker/`               |
+| Block counters surfaced in the shield UI                          | Planned — Phase 1          | `modules/browser/`              |
+| Site-profile framework (per-host shield/chrome/responsive tuning) | Planned — Phase 2          | `modules/services/` + profiles  |
+| Isolated ephemeral contexts for long-tail sites                   | Planned — Phase 2          | `modules/browser/`              |
+| Safe-browsing warnings; popup/download suppression                | Planned — Phase 2          | `modules/browser/`              |
+| Reading mode (reader extraction, same shield guarantees)          | Planned — Phase 3          | new `modules/reader/`           |
+| AI-native assistance (view-scoped, opt-in, origin-bound)          | Exploring — Phase 4        | —                               |
+| SponsorBlock category toggles in settings                         | Planned — continuous       | `features/settings/`            |
+| Spotify full-track playback via the Web Playback SDK (DRM intact) | Planned — continuous       | `modules/providers/`            |
 | More tier-1 sites by demand                                       | Planned — continuous       | `modules/providers/` + profiles |
-| Windows/Linux validation                                          | Open — no claims until run | —                              |
+| Windows/Linux validation                                          | Open — no claims until run | —                               |
 
 ### 10.2 Phases
 

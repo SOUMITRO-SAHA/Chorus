@@ -1,0 +1,136 @@
+# History grouped by service: seed one real visit per service in Chorus
+# Browser, then assert the filter rail, per-service filtering, and clearing.
+appId: com.soumitrasaha.chorus
+name: browser-history-grouping
+---
+- launchApp:
+    appId: com.soumitrasaha.chorus
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 60000
+
+# Seed YouTube, then relaunch into Chorus home. Relaunching is more reliable
+# than the in-page Home button, whose fixed nav is clipped on some sites.
+- tapOn: "Open YouTube"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 90000
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 60000
+
+# Seed YouTube Music.
+- tapOn: "Open YouTube Music"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 90000
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 60000
+
+# Seed Spotify.
+- tapOn: "Open Spotify"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 90000
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 60000
+
+# Seed a non-service site through the address bar.
+- tapOn:
+    id: ".*browser-url-input"
+- inputText: "example.com"
+- tapOn:
+    id: ".*browser-url-submit"
+- extendedWaitUntil:
+    visible:
+      id: ".*chorus-nav-home"
+    timeout: 90000
+- launchApp:
+    appId: com.soumitrasaha.chorus
+- extendedWaitUntil:
+    visible:
+      id: ".*browser-url-input"
+    timeout: 60000
+
+# Open history and confirm the service rail and grouped rows.
+- tapOn:
+    id: ".*browser-menu"
+- tapOn: "History"
+- assertVisible:
+    id: ".*history-panel"
+- assertVisible:
+    id: ".*history-tab-all"
+- assertVisible:
+    id: ".*history-tab-youtube"
+- assertVisible:
+    id: ".*history-tab-youtube-music"
+- assertVisible:
+    id: ".*history-tab-spotify"
+- assertVisible:
+    id: ".*history-tab-other"
+- assertVisible: "Open youtube.com.*"
+- assertVisible: "Open music.youtube.com.*"
+- assertVisible: "Open open.spotify.com.*"
+- assertVisible: "Open example.com.*"
+- takeScreenshot: browser-history-all
+
+# YouTube filter shows only the YouTube visit.
+- tapOn:
+    id: ".*history-tab-youtube"
+- assertVisible: "Open youtube.com.*"
+- assertNotVisible: "Open music.youtube.com.*"
+- assertNotVisible: "Open open.spotify.com.*"
+- assertNotVisible: "Open example.com.*"
+- takeScreenshot: browser-history-youtube
+
+# YouTube Music filter is separate from YouTube.
+- tapOn:
+    id: ".*history-tab-youtube-music"
+- assertVisible: "Open music.youtube.com.*"
+- assertNotVisible: "Open youtube.com.*"
+- assertNotVisible: "Open open.spotify.com.*"
+- takeScreenshot: browser-history-youtube-music
+
+# Spotify filter.
+- tapOn:
+    id: ".*history-tab-spotify"
+- assertVisible: "Open open.spotify.com.*"
+- assertNotVisible: "Open music.youtube.com.*"
+- assertNotVisible: "Open example.com.*"
+- takeScreenshot: browser-history-spotify
+
+# Everything outside Chorus's services is grouped under Other.
+- tapOn:
+    id: ".*history-tab-other"
+- assertVisible: "Open example.com.*"
+- assertNotVisible: "Open youtube.com.*"
+- assertNotVisible: "Open open.spotify.com.*"
+- takeScreenshot: browser-history-other
+
+# Clearing history resets every bucket and shows the empty state.
+- tapOn:
+    id: ".*history-clear"
+- assertVisible:
+    id: ".*history-empty"
+- assertVisible: "No history yet"
+- takeScreenshot: browser-history-empty
+- tapOn:
+    id: ".*close-history"
+- assertVisible:
+    id: ".*browser-url-input"
