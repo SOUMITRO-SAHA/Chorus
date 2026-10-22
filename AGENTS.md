@@ -97,6 +97,13 @@ Dependencies point downward only:
 between sibling modules. `shared/` must never import from `modules/`. In-repo
 crates must never depend on the Tauri app.
 
+**Placement ladder.** A single caller's helper stays private in its module; a
+primitive 2+ modules need goes in `shared/`; a bounded capability becomes a
+module; reusable or dependency-heavy logic becomes a crate. Move code up a
+tier only when the trigger fires, in the same change. Name modules for the
+capability — never create `utils.rs`, `helpers.rs`, or `common.rs` dumping
+grounds.
+
 The app lives in **`app/`**. Run every app command from that directory.
 
 ## Commands (run from `app/`)
@@ -151,6 +158,77 @@ cargo test
 For provider changes, also run `cargo test --test live_api`. For UI changes,
 add and run the targeted Maestro flow on an Android device or emulator.
 
+### Maestro MCP setup
+
+Prerequisites, in order:
+
+1. `adb devices` — an Android device/emulator must be attached and visible.
+2. `bun android` — the dev app must be running (Vite on port 1420 + the
+   Tauri watcher).
+3. Maestro MCP `list_devices` — pick the `device_id` it returns. Never invent
+   a device ID.
+
+Workflow per feature: `inspect_screen` before targeting any element; author
+the flow as declarative YAML (launchApp → actions → assertions); `run` with
+`{ device_id, yaml }`; re-inspect after any UI change — element trees go
+stale after navigation or hot reload; fix what the flow catches and re-run
+until green. One full flow beats many single-command calls.
+
+## Naming conventions
+
+What no tool enforces is repeated here.
+
+### Rust
+
+| Kind                                     | Convention                         | Chorus example                             |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------------ |
+| Files / modules                          | `snake_case`                       | `innertube.rs`, `macos_blocker.rs`         |
+| Types / traits / enums                   | `PascalCase`                       | `MediaItem`, `WatchData`, `Kind`           |
+| Functions / methods / variables / fields | `snake_case`                       | `youtube_search`, `video_id`               |
+| Consts / statics                         | `SCREAMING_SNAKE_CASE`             | `DESKTOP_UA`, `SERVICES`                   |
+| Tauri command names                      | `snake_case`, stable               | `youtube_search`, `spotify_save_client_id` |
+| Crate                                    | package `chorus`, lib `chorus_lib` | do not rename                              |
+
+Commands are a cross-language contract. Renaming one is a breaking change to
+both Rust and TypeScript.
+
+### TypeScript & React
+
+**Files are kebab-case, with a role suffix carrying one role per file.**
+
+| Kind                       | File name             | Example                                       |
+| -------------------------- | --------------------- | --------------------------------------------- |
+| React component            | `<name>.tsx`          | `MediaCard` in `components/media-card.tsx`    |
+| React hook                 | `useHookName.ts`      | `useAudioPlayer` in `hooks/useAudioPlayer.ts` |
+| shadcn / Radix primitive   | `<name>.tsx`          | `components/ui/button.tsx`                    |
+| Typed IPC wrapper / module | `<name>.ts`           | `lib/api.ts`                                  |
+| Shared types               | `<domain>.types.ts`   | `MediaItem` in `lib/media.types.ts`           |
+| Pure helpers               | `<name>.utils.ts`     | `formatDuration.utils.ts`                     |
+| Constants / query keys     | `<name>.constants.ts` | `query-keys.constants.ts`                     |
+| Feature page / component   | `<name>.tsx` or `<name>-page.tsx` | `launcher.tsx`, `music-page.tsx`  |
+| Maestro flow               | `<feature>.yaml`      | `maestro/youtube-search.yaml`                 |
+| Vite / toolchain config    | framework name        | `vite.config.ts`                              |
+
+- React components are kebab-case files with a PascalCase symbol matching the
+  export — this is what shadcn generates; stay consistent with the CLI.
+- Hooks: exactly one hook per file, named verbatim after the hook. Never
+  `use-audio-player.ts`, never `useAudioPlayer.hook.ts`, and never
+  types/helpers riding along in the same file.
+- Framework-fixed names are exempt: `main.tsx`, `App.tsx`, `vite-env.d.ts`,
+  `vite.config.ts`, `tsconfig*.json`. Folders stay kebab-case.
+- Symbols: components `PascalCase`; hooks `use` + `PascalCase`; interfaces
+  and type aliases `PascalCase` with **no `I`/`T` prefix** (`MediaItem`,
+  `SpotifyStatus`) — `interface` for objects, `type` for unions; variables,
+  functions, parameters `camelCase`; compile-time constants only in
+  `SCREAMING_SNAKE_CASE`; typed errors `PascalCase` ending `Error`.
+
+### Cross-boundary consistency
+
+The IPC boundary is the one place where Rust and TypeScript names must agree:
+the command name, its argument keys (camelCase in TS ↔ serde in Rust), and
+its return type. When you rename on one side, rename the other in the **same
+change** — a silent mismatch shows up only as `undefined` at runtime.
+
 ## Rust rules
 
 - Edition 2024. Do not add a toolchain pin or clippy/rustfmt config.
@@ -169,6 +247,11 @@ add and run the targeted Maestro flow on an Android device or emulator.
 - Exported items get rustdoc `///`; every module gets a `//!` doc comment stating
   what it owns. No inline narration comments.
 - Never log secrets, tokens, or full provider response payloads.
+- Tauri supplies the async runtime. Do not add a tokio runtime; the existing
+  `tokio` dependency is limited to `sync`/`macros` primitives.
+- The release profile (`lto`, `strip`, `panic = "abort"`,
+  `codegen-units = 1`) is deliberate. Never weaken it to speed up a local
+  build, and never rely on `catch_unwind` in release.
 
 ## TypeScript and React rules
 
@@ -182,9 +265,11 @@ add and run the targeted Maestro flow on an Android device or emulator.
   never call it directly.
 - Treat IPC payloads as untrusted. `api.ts` is the boundary; components consume
   domain types.
-- TanStack React Query is the data layer. Keep query keys stable arrays. A
-  component that fetches data owns the query and renders loading, error, empty,
-  and data states. Do not mirror fetched data into `useState` plus `useEffect`.
+- TanStack React Query is the data layer; Effect is not installed. Do not add
+  a second data or state layer without approval. Keep query keys stable
+  arrays. A component that fetches data owns the query and renders loading,
+  error, empty, and data states. Do not mirror fetched data into `useState`
+  plus `useEffect`.
 - `useState` is for ephemeral UI state only. Derive everything else during
   render.
 - Never use `dangerouslySetInnerHTML`. Provider data is never markup.
@@ -208,6 +293,62 @@ add and run the targeted Maestro flow on an Android device or emulator.
 - Keep provider-specific behavior in `src/features/<domain>/` and
   `src-tauri/src/modules/providers/`. Generic UI must not branch on provider
   quirks.
+
+## Architecture
+
+```
+Chorus Browser (modules/browser/ + browser-home)  ── persistent webview ──▶ official sites
+      │ always-on Shield (modules/blocker/) on every page
+      │
+React (app/src/)  ──invoke()──▶  Rust Tauri commands (app/src-tauri/src/modules/)
+     │                            ├─ providers/innertube.rs → InnerTube API
+src/lib/api.ts                    ├─ providers/youtube.rs   → browse/search/watch
+(the ONLY data layer)             ├─ providers/music.rs     → home/search/play
+                                  └─ providers/spotify.rs   → Web API (PKCE)
+```
+
+- **Chorus Browser (primary)** — `open_browser(id)` opens the official web
+  app inside a persistent webview with our own chrome and always-on Shield
+  filtering. Chorus is **single-site**: one website is active at a time —
+  mobile navigates the single main window in place (with the injected
+  **← Chorus** chrome); desktop keeps at most one service window and tears
+  the previous one down when the user switches services. No tabs, no
+  parallel sessions. The desktop UA keeps official sign-in working. Browser
+  home (shortcuts/history, SQLite via the `browser-store` crate) is the
+  launcher.
+- **Native acceleration layer (secondary)** — `src/lib/api.ts` is the single
+  typed data layer over the Rust commands; wire models share the same
+  camelCase JSON across the boundary. It accelerates browse/search for the
+  same services the browser renders; it is not a separate content source,
+  and new feature work defaults to the browser path.
+
+### Backend surfaces
+
+- `modules/providers/<service>.rs` — one module per service; public async
+  fns are the Tauri commands. **When adding a command:** register it in
+  `lib.rs` → `invoke_handler`, then add a typed wrapper in `src/lib/api.ts`.
+- Commands return `Result<T, String>` — errors surface to the frontend as
+  strings; `api.ts` wraps them into `Error` for React Query. Return
+  descriptive error strings (endpoint + cause).
+- `modules/blocker/` — ad/tracker network rules + injected page scripts (all
+  platforms), plus macOS-only network-level blocking. If a service changes
+  its ad endpoints, update this module.
+- `modules/services/` — service registry + desktop UA. `modules/browser/` —
+  Chorus Browser; on mobile the main window navigates in place, with an
+  injected back button.
+- `shared/domain/` — wire models shared by providers and the frontend.
+
+### Adding a feature end-to-end (checklist)
+
+1. Rust command in the owning module under `src-tauri/src/modules/`, plus a
+   `shared/domain/` struct if the shape is shared (camelCase serde).
+2. Register in `lib.rs` `invoke_handler`; add a wrapper to `src/lib/api.ts`;
+   mirror the type in `src/lib/types.ts`.
+3. Page/component under `src/features/<domain>/`, route in `App.tsx`, data
+   via React Query.
+4. `bun run build` clean → `bun run format:check` + `cargo clippy
+   --all-targets -- -D warnings` clean → verify on Android via `bun android`
+   → add + run a Maestro flow in `app/maestro/`.
 
 ## Security and privacy
 
@@ -237,6 +378,19 @@ add and run the targeted Maestro flow on an Android device or emulator.
   `.temp/`, or local secrets.
 - Keep `app/bun.lock` and `app/src-tauri/Cargo.lock` with dependency changes;
   never hand-edit either.
+
+## Gotchas
+
+- `target/`, `gen/`, `dist/`, `node_modules/`, and `.temp/` are
+  generated/scratch — never edit or commit them.
+- Don't rename the crate (`chorus_lib` in `Cargo.toml`) or the Vite port
+  (1420); both are wired into the Tauri build.
+- On mobile there is only **one window** — multi-window code paths are
+  `#[cfg(desktop)]`; respect those guards.
+- The release profile uses `lto`, `strip`, `panic = "abort"` — debug builds
+  only for dev; `cargo test` runs in the dev profile.
+- Linux distribution compatibility is unvalidated — never infer support from
+  one build.
 
 ## Definition of done
 
